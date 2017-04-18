@@ -11,13 +11,13 @@ class CalculationsController < ApplicationController
     # ================================================================================
 
 
-    @character_count_with_spaces = "Replace this string with your answer."
+    @character_count_with_spaces = @text.length
 
-    @character_count_without_spaces = "Replace this string with your answer."
+    @character_count_without_spaces = @text.gsub(" ","").gsub("\n","").gsub("\r","").chomp.length
 
-    @word_count = "Replace this string with your answer."
+    @word_count = @text.split.count
 
-    @occurrences = "Replace this string with your answer."
+    @occurrences = @text.downcase.gsub(/[^a-z0-9 ]/i,"").split.count(@special_word.downcase)
 
     # ================================================================================
     # Your code goes above.
@@ -30,6 +30,9 @@ class CalculationsController < ApplicationController
     @apr = params[:annual_percentage_rate].to_f
     @years = params[:number_of_years].to_i
     @principal = params[:principal_value].to_f
+    @monthly_rate = ((@apr/100)/12)
+    @number_of_pmts = @years*12
+
 
     # ================================================================================
     # Your code goes below.
@@ -38,7 +41,7 @@ class CalculationsController < ApplicationController
     # The principal value the user input is in the decimal @principal.
     # ================================================================================
 
-    @monthly_payment = "Replace this string with your answer."
+    @monthly_payment = @principal * ((@monthly_rate*(1+@monthly_rate)**@number_of_pmts)/(((1+@monthly_rate)**@number_of_pmts)-1))
 
     # ================================================================================
     # Your code goes above.
@@ -60,12 +63,12 @@ class CalculationsController < ApplicationController
     #   number of seconds as a result.
     # ================================================================================
 
-    @seconds = "Replace this string with your answer."
-    @minutes = "Replace this string with your answer."
-    @hours = "Replace this string with your answer."
-    @days = "Replace this string with your answer."
-    @weeks = "Replace this string with your answer."
-    @years = "Replace this string with your answer."
+    @seconds = @ending - @starting
+    @minutes = (@ending - @starting)/60
+    @hours = ((@ending - @starting)/60)/60
+    @days = (((@ending - @starting)/60)/60)/24
+    @weeks = ((((@ending - @starting)/60)/60)/24)/7
+    @years = (((((@ending - @starting)/60)/60)/24)/7)/52
 
     # ================================================================================
     # Your code goes above.
@@ -82,32 +85,35 @@ class CalculationsController < ApplicationController
     # The numbers the user input are in the array @numbers.
     # ================================================================================
 
-    @sorted_numbers = "Replace this string with your answer."
+    @sorted_numbers = @numbers.sort
 
-    @count = "Replace this string with your answer."
+    @count = @numbers.count
 
-    @minimum = "Replace this string with your answer."
+    @minimum = @numbers.min
 
-    @maximum = "Replace this string with your answer."
+    @maximum = @numbers.max
 
-    @range = "Replace this string with your answer."
+    @range = @maximum - @minimum
 
-    @median = "Replace this string with your answer."
 
-    @sum = "Replace this string with your answer."
+        @median =  (@sorted_numbers[(@sorted_numbers.length - 1) / 2] + @sorted_numbers[@sorted_numbers.length / 2]) / 2.0
 
-    @mean = "Replace this string with your answer."
+    @sum = @numbers.sum
 
-    @variance = "Replace this string with your answer."
+    @mean = @sum/@count
 
-    @standard_deviation = "Replace this string with your answer."
+  var_sum = @numbers.map{|n| (n-@mean)**2}.inject(:+).to_f
+    @variance = var_sum / (@numbers.length - 1)
 
-    @mode = "Replace this string with your answer."
+    @standard_deviation = Math.sqrt(@variance)
+
+
+    @mode = @numbers.max_by { |i| @numbers.count(i) }
 
     # ================================================================================
     # Your code goes above.
     # ================================================================================
 
     render("descriptive_statistics.html.erb")
-  end
+end
 end
